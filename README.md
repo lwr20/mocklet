@@ -27,7 +27,7 @@ Now you can notice mocklet is added into your cluster
 NAME                                     STATUS   ROLES    AGE     VERSION
 gke-gke5684-default-pool-1y5e7l53-kphx   Ready    <none>   4h23m   v1.14.10-gke.27
 gke-gke5684-default-pool-1y5e7l53-x5kj   Ready    <none>   4h23m   v1.14.10-gke.27
-mocklet                                  Ready    agent    2m32s   v1.16.15-vk-N/A
+mocklet                                  Ready    agent    2m32s   v1.17.14-vk-N/A
 ```
 
 **Note:** This project must be only used for scale test to simulate 1000's pods in a mock kubelet.
