@@ -7,7 +7,7 @@ import (
 	"github.com/virtual-kubelet/virtual-kubelet/node"
 	"github.com/virtual-kubelet/virtual-kubelet/node/api"
 	v1 "k8s.io/api/core/v1"
-	stats "github.com/virtual-kubelet/virtual-kubelet/node/api/statsv1alpha1
+	stats "github.com/virtual-kubelet/virtual-kubelet/node/api/statsv1alpha1"
 )
 
 // Provider contains the methods required to implement a mocklet provider.

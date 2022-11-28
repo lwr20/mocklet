@@ -71,11 +71,9 @@ replace k8s.io/sample-controller => k8s.io/sample-controller v0.23.14
 
 replace k8s.io/controller-manager => k8s.io/controller-manager v0.23.14
 
-// replace github.com/moby/spdystream => github.com/docker/spdystream v0.2.0
-replace github.com/docker/spdystream => github.com/moby/spdystream v0.2.0
+replace github.com/moby/spdystream => github.com/docker/spdystream v0.2.0
 
-// replace github.com/google/gnostic => github.com/googleapis/gnostic v0.6.9
-replace github.com/googleapis/gnostic => github.com/google/gnostic v0.6.9
+replace github.com/google/gnostic => github.com/googleapis/gnostic v0.6.9
 
 replace k8s.io/component-helpers => k8s.io/component-helpers v0.23.14
 
