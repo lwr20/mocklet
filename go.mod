@@ -3,7 +3,7 @@ module github.com/VineethReddy02/mocklet
 go 1.18
 
 require (
-	contrib.go.opencensus.io/exporter/jaeger v0.2.0
+	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/exporter/ocagent v0.7.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.9.1
@@ -11,7 +11,7 @@ require (
 	github.com/spf13/cobra v0.0.5
 	github.com/spf13/pflag v1.0.5
 	github.com/virtual-kubelet/virtual-kubelet v1.2.1-0.20200320220811-47a353897e8d
-	go.opencensus.io v0.22.3
+	go.opencensus.io v0.22.4
 	gopkg.in/yaml.v2 v2.2.8
 	k8s.io/api v0.17.14
 	k8s.io/apimachinery v0.17.14
@@ -40,15 +40,15 @@ require (
 	github.com/json-iterator/go v1.1.8 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
-	github.com/uber/jaeger-client-go v2.15.0+incompatible // indirect
+	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	golang.org/x/crypto v0.0.0-20200220183623-bac4c82f6975 // indirect
 	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d // indirect
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a // indirect
+	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208 // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
-	google.golang.org/api v0.25.0 // indirect
+	google.golang.org/api v0.29.0 // indirect
 	google.golang.org/appengine v1.6.5 // indirect
 	google.golang.org/genproto v0.0.0-20200527145253-8367513e4ece // indirect
 	google.golang.org/grpc v1.29.1 // indirect
