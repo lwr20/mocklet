@@ -70,7 +70,7 @@ github.com/pkg/errors
 github.com/sirupsen/logrus
 # github.com/spf13/cobra v0.0.2
 github.com/spf13/cobra
-# github.com/spf13/pflag v1.0.3
+# github.com/spf13/pflag v1.0.5
 github.com/spf13/pflag
 # github.com/uber/jaeger-client-go v2.15.0+incompatible
 github.com/uber/jaeger-client-go/thrift
