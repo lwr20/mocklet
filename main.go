@@ -22,26 +22,23 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 	"github.com/VineethReddy02/mocklet/internal/commands/providers"
 	"github.com/VineethReddy02/mocklet/internal/commands/root"
 	"github.com/VineethReddy02/mocklet/internal/commands/version"
 	"github.com/VineethReddy02/mocklet/internal/provider"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
-
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
 	"github.com/virtual-kubelet/virtual-kubelet/log"
 	logruslogger "github.com/virtual-kubelet/virtual-kubelet/log/logrus"
 	"github.com/virtual-kubelet/virtual-kubelet/trace"
 	"github.com/virtual-kubelet/virtual-kubelet/trace/opencensus"
-	_ "k8s.io/client-go/plugin/pkg/client/auth/exec"
 )
 
 var (
 	buildVersion = "N/A"
 	buildTime    = "N/A"
-	k8sVersion   = "v1.17.14" // This should follow the version of k8s.io/kubernetes we are importing
+	k8sVersion   = "v1.21.4" // This should follow the version of k8s.io/kubernetes we are importing
 )
 
 func main() {

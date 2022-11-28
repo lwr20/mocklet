@@ -1,10 +1,10 @@
 package provider
 
 import (
-	"github.com/VineethReddy02/mocklet/manager"
 	"sync"
 
 	"github.com/virtual-kubelet/virtual-kubelet/errdefs"
+	"github.com/VineethReddy02/mocklet/manager"
 )
 
 // Store is used for registering/fetching providers
@@ -13,7 +13,7 @@ type Store struct {
 	ls map[string]InitFunc
 }
 
-func NewStore() *Store {
+func NewStore() *Store { //nolint:golint
 	return &Store{
 		ls: make(map[string]InitFunc),
 	}
@@ -71,4 +71,4 @@ type InitConfig struct {
 	ResourceManager   *manager.ResourceManager
 }
 
-type InitFunc func(InitConfig) (Provider, error)
+type InitFunc func(InitConfig) (Provider, error) //nolint:golint

@@ -90,10 +90,10 @@ func setupHTTPServer(ctx context.Context, p provider.Provider, cfg *apiServerCon
 		mux := http.NewServeMux()
 
 		podRoutes := api.PodHandlerConfig{
-			RunInContainer:        p.RunInContainer,
-			GetContainerLogs:      p.GetContainerLogs,
+			RunInContainer:   p.RunInContainer,
+			GetContainerLogs: p.GetContainerLogs,
 			//GetPodsFromKubernetes: getPodsFromKubernetes,
-			GetPods:               p.GetPods,
+			GetPods: p.GetPods,
 			//StreamIdleTimeout:     cfg.StreamIdleTimeout,
 			//StreamCreationTimeout: cfg.StreamCreationTimeout,
 		}
@@ -150,6 +150,7 @@ func serveHTTP(ctx context.Context, s *http.Server, l net.Listener, name string)
 type apiServerConfig struct {
 	CertPath              string
 	KeyPath               string
+	CACertPath            string
 	Addr                  string
 	MetricsAddr           string
 	StreamIdleTimeout     time.Duration
@@ -158,8 +159,9 @@ type apiServerConfig struct {
 
 func getAPIConfig(c Opts) (*apiServerConfig, error) {
 	config := apiServerConfig{
-		CertPath: os.Getenv("APISERVER_CERT_LOCATION"),
-		KeyPath:  os.Getenv("APISERVER_KEY_LOCATION"),
+		CertPath:   os.Getenv("APISERVER_CERT_LOCATION"),
+		KeyPath:    os.Getenv("APISERVER_KEY_LOCATION"),
+		CACertPath: os.Getenv("APISERVER_CA_CERT_LOCATION"),
 	}
 
 	config.Addr = fmt.Sprintf(":%d", c.ListenPort)
