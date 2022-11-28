@@ -12,7 +12,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/virtual-kubelet/virtual-kubelet v1.2.1-0.20200320220811-47a353897e8d
 	go.opencensus.io v0.22.3
-	gopkg.in/yaml.v2 v2.2.8
+	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.17.14
 	k8s.io/apimachinery v0.17.14
 	k8s.io/client-go v10.0.0+incompatible
