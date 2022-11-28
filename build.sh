@@ -1,3 +1,3 @@
 #!/bin/bash
-
-go build -o bin/mocklet .
+docker build -t lwr20/mocklet .
+docker push lwr20/mocklet
