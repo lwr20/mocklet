@@ -36,7 +36,6 @@ import (
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/kubernetes/typed/coordination/v1beta1"
 	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -84,6 +83,10 @@ func RunRootCommand(ctx context.Context, s *provider.Store, c Opts) error {
 
 	client, err := newClient(c.KubeConfigPath)
 	if err != nil {
+		return err
+	}
+	if client == nil {
+		println("Client is Nil")
 		return err
 	}
 
@@ -145,17 +148,13 @@ func RunRootCommand(ctx context.Context, s *provider.Store, c Opts) error {
 		"watchedNamespace": c.KubeNamespace,
 	}))
 
-	var leaseClient v1beta1.LeaseInterface
-	if c.EnableNodeLease {
-		leaseClient = client.CoordinationV1beta1().Leases(corev1.NamespaceNodeLease)
-	}
-
+	leaseClient := client.CoordinationV1().Leases(corev1.NamespaceNodeLease)
 	pNode := NodeFromProvider(ctx, c.NodeName, taint, p, c.Version)
 	nodeRunner, err := node.NewNodeController(
 		node.NaiveNodeProvider{},
 		pNode,
 		client.CoreV1().Nodes(),
-		node.WithNodeEnableLeaseV1Beta1(leaseClient, nil),
+		node.WithNodeEnableLeaseV1(leaseClient, 0),
 		node.WithNodeStatusUpdateErrorHandler(func(ctx context.Context, err error) error {
 			if !k8serrors.IsNotFound(err) {
 				return err
@@ -164,7 +163,7 @@ func RunRootCommand(ctx context.Context, s *provider.Store, c Opts) error {
 			log.G(ctx).Debug("node not found")
 			newNode := pNode.DeepCopy()
 			newNode.ResourceVersion = ""
-			_, err = client.CoreV1().Nodes().Create(newNode)
+			_, err = client.CoreV1().Nodes().Create(ctx, newNode, metav1.CreateOptions{})
 			if err != nil {
 				return err
 			}

@@ -18,7 +18,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	stats "k8s.io/kubernetes/pkg/kubelet/apis/stats/v1alpha1"
+	stats "github.com/virtual-kubelet/virtual-kubelet/node/api/statsv1alpha1"
 )
 
 const (
@@ -104,11 +104,13 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 		if err != nil {
 			return config, err
 		}
+		fmt.Println(data)
 		configMap := map[string]MockConfig{}
 		err = yaml.Unmarshal(data, configMap)
 		if err != nil {
 			return config, err
 		}
+		fmt.Println(configMap)
 		if _, exist := configMap[nodeName]; exist {
 			config = configMap[nodeName]
 			if config.CPU == "" {
@@ -122,13 +124,14 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 			}
 		}
 	} else {
+		fmt.Println("No config file supplied, using env vars")
 		config.Pods = os.Getenv("NUMBER_OF_PODS")
 		config.CPU = os.Getenv("NODE_CPU")
 		config.Memory = os.Getenv("NODE_MEMORY")
 	}
 
 
-	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s", config.Pods, config.CPU, config.Memory)
+	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s\n", config.Pods, config.CPU, config.Memory)
 
 	if _, err = resource.ParseQuantity(config.CPU); err != nil {
 		return config, fmt.Errorf("Invalid CPU value %v", config.CPU)
