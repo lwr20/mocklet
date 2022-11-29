@@ -104,11 +104,13 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 		if err != nil {
 			return config, err
 		}
+		fmt.Println(data)
 		configMap := map[string]MockConfig{}
 		err = yaml.Unmarshal(data, configMap)
 		if err != nil {
 			return config, err
 		}
+		fmt.Println(configMap)
 		if _, exist := configMap[nodeName]; exist {
 			config = configMap[nodeName]
 			if config.CPU == "" {
@@ -122,6 +124,7 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 			}
 		}
 	} else {
+		fmt.Println("No config file supplied, using env vars")
 		config.Pods = os.Getenv("NUMBER_OF_PODS")
 		config.CPU = os.Getenv("NODE_CPU")
 		config.Memory = os.Getenv("NODE_MEMORY")
