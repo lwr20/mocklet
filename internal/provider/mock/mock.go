@@ -131,7 +131,7 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 	}
 
 
-	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s", config.Pods, config.CPU, config.Memory)
+	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s\n", config.Pods, config.CPU, config.Memory)
 
 	if _, err = resource.ParseQuantity(config.CPU); err != nil {
 		return config, fmt.Errorf("Invalid CPU value %v", config.CPU)

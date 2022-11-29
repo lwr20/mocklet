@@ -36,7 +36,6 @@ import (
 	kubeinformers "k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/kubernetes/typed/coordination/v1"
 	corev1client "k8s.io/client-go/kubernetes/typed/core/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -149,11 +148,7 @@ func RunRootCommand(ctx context.Context, s *provider.Store, c Opts) error {
 		"watchedNamespace": c.KubeNamespace,
 	}))
 
-	var leaseClient v1.LeaseInterface
-	if c.EnableNodeLease {
-		leaseClient = client.CoordinationV1().Leases(corev1.NamespaceNodeLease)
-	}
-
+	leaseClient := client.CoordinationV1().Leases(corev1.NamespaceNodeLease)
 	pNode := NodeFromProvider(ctx, c.NodeName, taint, p, c.Version)
 	nodeRunner, err := node.NewNodeController(
 		node.NaiveNodeProvider{},
