@@ -3,10 +3,10 @@ package mock
 import (
 	"context"
 	"fmt"
-	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"math/rand"
+	"net/netip"
 	"os"
 	"strings"
 	"time"
@@ -14,11 +14,12 @@ import (
 	"github.com/virtual-kubelet/virtual-kubelet/errdefs"
 	"github.com/virtual-kubelet/virtual-kubelet/log"
 	"github.com/virtual-kubelet/virtual-kubelet/node/api"
+	stats "github.com/virtual-kubelet/virtual-kubelet/node/api/statsv1alpha1"
 	"github.com/virtual-kubelet/virtual-kubelet/trace"
+	"gopkg.in/yaml.v2"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	stats "github.com/virtual-kubelet/virtual-kubelet/node/api/statsv1alpha1"
 )
 
 const (
@@ -26,6 +27,7 @@ const (
 	defaultCPUCapacity    = "20"
 	defaultMemoryCapacity = "100Gi"
 	defaultPodCapacity    = "20"
+	defaultFirstIP        = "47.0.0.0"
 
 	// Values used in tracing as attribute keys.
 	namespaceKey     = "namespace"
@@ -52,13 +54,15 @@ type MockProvider struct { // nolint:golint
 	config             MockConfig
 	startTime          time.Time
 	notifier           func(*v1.Pod)
+	nextIP             string
 }
 
 // MockConfig contains a mock mocklet's configurable parameters.
 type MockConfig struct { //nolint:golint
-	CPU    string `yaml:"cpu,omitempty"`
-	Memory string `yaml:"memory,omitempty"`
-	Pods   string `yaml:"pods,omitempty"`
+	CPU     string `yaml:"cpu,omitempty"`
+	Memory  string `yaml:"memory,omitempty"`
+	Pods    string `yaml:"pods,omitempty"`
+	FirstIP string `yaml:"firstip,omitempty"`
 }
 
 // NewMockProviderMockConfig creates a new MockV0Provider. Mock legacy provider does not implement the new asynchronous podnotifier interface
@@ -73,6 +77,9 @@ func NewMockProviderMockConfig(config MockConfig, nodeName, operatingSystem stri
 	if config.Pods == "" {
 		config.Pods = defaultPodCapacity
 	}
+	if config.FirstIP == "" {
+		config.FirstIP = defaultFirstIP
+	}
 	provider := MockProvider{
 		nodeName:           nodeName,
 		operatingSystem:    operatingSystem,
@@ -81,6 +88,7 @@ func NewMockProviderMockConfig(config MockConfig, nodeName, operatingSystem stri
 		pods:               make(map[string]*v1.Pod),
 		config:             config,
 		startTime:          time.Now(),
+		nextIP:             config.FirstIP,
 	}
 
 	return &provider, nil
@@ -130,7 +138,6 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 		config.Memory = os.Getenv("NODE_MEMORY")
 	}
 
-
 	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s\n", config.Pods, config.CPU, config.Memory)
 
 	if _, err = resource.ParseQuantity(config.CPU); err != nil {
@@ -159,6 +166,15 @@ func RandStringRunes(n int) string {
 	return string(b)
 }
 
+func ipam(provider *MockProvider) string {
+	ip := netip.MustParseAddr(provider.nextIP)
+	println(ip.String())
+	next := ip.Next()
+	println(next.String())
+	provider.nextIP = next.String()
+	return ip.String()
+}
+
 // CreatePod accepts a Pod definition and stores it in memory.
 func (p *MockProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 	ctx, span := trace.StartSpan(ctx, "CreatePod")
@@ -177,7 +193,7 @@ func (p *MockProvider) CreatePod(ctx context.Context, pod *v1.Pod) error {
 	pod.Status = v1.PodStatus{
 		Phase:     v1.PodRunning,
 		HostIP:    "1.2.3.4",
-		PodIP:     "5.6.7.8",
+		PodIP:     ipam(p),
 		StartTime: &now,
 		Conditions: []v1.PodCondition{
 			{
@@ -438,11 +454,11 @@ func (p *MockProvider) nodeAddresses() []v1.NodeAddress {
 	return []v1.NodeAddress{
 		{
 			Type:    "InternalIP",
-			Address:  p.internalIP,
+			Address: p.internalIP,
 		},
 		{
 			Type:    "Hostname",
-			Address:  p.nodeName,
+			Address: p.nodeName,
 		},
 	}
 }
