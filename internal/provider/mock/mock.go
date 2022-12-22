@@ -130,15 +130,19 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 			if config.Pods == "" {
 				config.Pods = defaultPodCapacity
 			}
+			if config.FirstIP == "" {
+				config.FirstIP = defaultFirstIP
+			}
 		}
 	} else {
 		fmt.Println("No config file supplied, using env vars")
 		config.Pods = os.Getenv("NUMBER_OF_PODS")
 		config.CPU = os.Getenv("NODE_CPU")
 		config.Memory = os.Getenv("NODE_MEMORY")
+		config.FirstIP = os.Getenv("FIRST_IP")
 	}
 
-	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s\n", config.Pods, config.CPU, config.Memory)
+	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s, first_ip = %s\n", config.Pods, config.CPU, config.Memory, config.FirstIP)
 
 	if _, err = resource.ParseQuantity(config.CPU); err != nil {
 		return config, fmt.Errorf("Invalid CPU value %v", config.CPU)
@@ -148,6 +152,9 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 	}
 	if _, err = resource.ParseQuantity(config.Pods); err != nil {
 		return config, fmt.Errorf("Invalid pods value %v", config.Pods)
+	}
+	if _, err = netip.ParseAddr(config.FirstIP); err != nil {
+		return config, fmt.Errorf("Invalid FirstIP value %v", config.FirstIP)
 	}
 	return config, nil
 }

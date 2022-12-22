@@ -52,16 +52,20 @@ spec:
       serviceAccountName: mocklet
       containers:
         - name: mocklet
-          image: vineeth97/mocklet
+          image: lwr20/mocklet
           imagePullPolicy: Always
           ports:
             - containerPort: 80
           env:
             - name: DEFAULT_NODE_NAME
-              value: "mocklet"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
             - name: NODE_CPU
               value: "200"
             - name: NODE_MEMORY
               value: "500Gi"
             - name: NUMBER_OF_PODS
               value: "10000"
+            - name: FIRST_IP
+              value: "47.0.0.0"
