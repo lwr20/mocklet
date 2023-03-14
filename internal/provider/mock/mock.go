@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/netip"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -54,7 +55,7 @@ type MockProvider struct { // nolint:golint
 	config             MockConfig
 	startTime          time.Time
 	notifier           func(*v1.Pod)
-	nextIP             string
+	NextIP             string
 }
 
 // MockConfig contains a mock mocklet's configurable parameters.
@@ -63,6 +64,7 @@ type MockConfig struct { //nolint:golint
 	Memory  string `yaml:"memory,omitempty"`
 	Pods    string `yaml:"pods,omitempty"`
 	FirstIP string `yaml:"firstip,omitempty"`
+	NextIP  string `yaml:"nextip,omitempty"`
 }
 
 // NewMockProviderMockConfig creates a new MockV0Provider. Mock legacy provider does not implement the new asynchronous podnotifier interface
@@ -88,7 +90,7 @@ func NewMockProviderMockConfig(config MockConfig, nodeName, operatingSystem stri
 		pods:               make(map[string]*v1.Pod),
 		config:             config,
 		startTime:          time.Now(),
-		nextIP:             config.FirstIP,
+		NextIP:             config.FirstIP,
 	}
 
 	return &provider, nil
@@ -140,6 +142,32 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 		config.CPU = os.Getenv("NODE_CPU")
 		config.Memory = os.Getenv("NODE_MEMORY")
 		config.FirstIP = os.Getenv("FIRST_IP")
+
+		// Hopefully the nodename is from a StatefulSet, and so will be of the form $(statefulset name)-$(ordinal)
+		// If so, we want to use the ordinal to set the FirstIP (so that nodes can have non-overlapping ranges)
+		nameslice := strings.Split(nodeName, "-")
+		if len(nameslice) == 2 {
+			log.L.Infof("nameslice[1]=%v", nameslice[1])
+			ord, err := strconv.Atoi(nameslice[1])
+			if err == nil {
+				podsPerNode, err := strconv.Atoi(config.Pods)
+				if err == nil {
+					ip := netip.MustParseAddr(config.FirstIP)
+					for i := 0; i < ord; i++ {
+						for j := 0; j < podsPerNode; j++ {
+							ip = ip.Next()
+						}
+					}
+					config.FirstIP = ip.String()
+				} else {
+					log.L.Error("Error converting PODS to int")
+				}
+			} else {
+				log.L.Error("Error converting ordinal to int")
+			}
+		} else {
+			log.L.Error("Name doesn't look like <name>-<ordinal>, so not calculating IP range")
+		}
 	}
 
 	fmt.Printf("Using config as number of pods= %s, node cpu = %s, node memory = %s, first_ip = %s\n", config.Pods, config.CPU, config.Memory, config.FirstIP)
@@ -174,11 +202,11 @@ func RandStringRunes(n int) string {
 }
 
 func ipam(provider *MockProvider) string {
-	ip := netip.MustParseAddr(provider.nextIP)
+	ip := netip.MustParseAddr(provider.NextIP)
 	println(ip.String())
 	next := ip.Next()
 	println(next.String())
-	provider.nextIP = next.String()
+	provider.NextIP = next.String()
 	return ip.String()
 }
 
