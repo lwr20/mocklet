@@ -146,9 +146,9 @@ func loadConfig(providerConfig, nodeName string) (config MockConfig, err error) 
 		// Hopefully the nodename is from a StatefulSet, and so will be of the form $(statefulset name)-$(ordinal)
 		// If so, we want to use the ordinal to set the FirstIP (so that nodes can have non-overlapping ranges)
 		nameslice := strings.Split(nodeName, "-")
-		if len(nameslice) == 2 {
-			log.L.Infof("nameslice[1]=%v", nameslice[1])
-			ord, err := strconv.Atoi(nameslice[1])
+		if len(nameslice) >= 2 {
+			log.L.Infof("nameslice[1]=%v", nameslice[len(nameslice)-1])
+			ord, err := strconv.Atoi(nameslice[len(nameslice)-1])
 			if err == nil {
 				podsPerNode, err := strconv.Atoi(config.Pods)
 				if err == nil {
